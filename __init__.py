@@ -13,7 +13,7 @@ def __get_parameters_and_return_from_docstring(docstring: str, type_correction: 
     @rtype: type
     """
     params = []
-    return_type = "None"  # Standard-Rückgabetyp
+    return_type = "None"
 
     if not docstring:
         return params, return_type
@@ -41,17 +41,17 @@ def __get_parameters_and_return_from_docstring(docstring: str, type_correction: 
 
 def __generate_stub_for_class(cls, type_correction: dict[str, str] = {}) -> str:
     """
-    Erzeugt den Stub-Inhalt für die gegebene Klasse.
+    Creates the stub content for the given class.
     """
     lines = [f"class {cls.__name__}:"]
     modulename = cls.__module__
-    # Klassenattribute extrahieren
+    # Extract class attributes
     for name, value in cls.__dict__.items():
         if not callable(value):
             attr_type = type(value).__name__
             lines.append(f"    {name}: {attr_type}")
 
-    # Methodensignaturen extrahieren
+    # Extract method signatures
     for name, member in inspect.getmembers(cls):
         try:
             if not ".overload" in name:
@@ -71,7 +71,7 @@ def __generate_stub_for_class(cls, type_correction: dict[str, str] = {}) -> str:
             print(f"Error in {name} with {member}")
             print(e)
 
-    # Hinzufügen einer Standardimplementierung, falls keine Methoden oder Attribute gefunden wurden
+    # Add a default implementation if no methods or attributes were found
     if len(lines) == 1:
         lines.append("    pass")
 
@@ -84,13 +84,13 @@ def __generate_stub_for_module(mdl, type_correction: dict[str, str] = {}) -> str
     """
     lines = [f""]
 
-    # Klassenattribute extrahieren
+    # Extract class attributes
     for name, value in mdl.__dict__.items():
         if not callable(value):
             attr_type = type(value).__name__
             lines.append(f"{name}: {attr_type}")
 
-    # Methodensignaturen extrahieren
+    # Extract method signatures
     for name, member in inspect.getmembers(mdl):
         try:
             if not ".overload" in name:
@@ -145,7 +145,7 @@ def generate_runtime_stubs(classes: List[Type], directory_path: str = "./typings
             module_classes[module_name] = []
         module_classes[module_name].append(cls)
 
-        # Füge Funktionen des Moduls hinzu
+        # Add functions to the module
         module = inspect.getmodule(cls)
         if module is not None:
             if module_name not in module_functions:
@@ -157,7 +157,7 @@ def generate_runtime_stubs(classes: List[Type], directory_path: str = "./typings
     for module_name, cls_list in module_classes.items():
         lines = []
 
-        # Stub für Klassen generieren
+        # Generate stub for classes
         for cls in cls_list:
             try:
                 if "__module__" in cls.__dict__:
